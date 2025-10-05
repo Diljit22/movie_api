@@ -2,11 +2,22 @@
 Main application file for the Movie API.
 """
 
-from fastapi import FastAPI, status
-from fastapi.responses import Response
+import logging
 
-# TODO Add logging
+from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.responses import JSONResponse, Response
 
+from movie_api.routers import movies
+from movie_api.schemas import ErrorDetail, ErrorResponse
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+
+# Prevents API leak in errors
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
 
 # FastAPI app instance
 app = FastAPI(
@@ -14,6 +25,18 @@ app = FastAPI(
     version="1.0.0",
     description="Movie API with TMDB integration",
 )
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    """Exception handler ensuring all API errors return a standardized JSON response."""
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=ErrorResponse(detail=ErrorDetail(message=exc.detail)).model_dump(),
+    )
+
+
+app.include_router(movies.router)
 
 
 @app.get("/", tags=["Root"])
