@@ -6,6 +6,10 @@ authors = [
     {name = "Diljit Singh", email = "DiljitSingh22@gmail.com"}
 ]
 requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.118.0",
+    "uvicorn[standard]>=0.37.0"
+]
 
 [project.optional-dependencies]
 dev = [
