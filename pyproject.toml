@@ -19,6 +19,8 @@ dev = [
     "pytest-cov>=6.2.1",
     "ruff>=0.13.3",
     "mypy>=1.15.0",
+    "pytest-asyncio>=1.2.0",
+    "pytest-httpx>=0.35.0",
 ]
 
 [build-system]
@@ -57,3 +59,38 @@ python_version = "3.13"
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
+
+# Pytest configuration
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+markers = [
+    "httpx: Marks tests that use the httpx_mock fixture"
+]
+addopts = [
+    "--strict-markers",
+    "--cov=movie_api",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["movie_api"]
+omit = [
+    "*/tests/*",
+    "*/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
