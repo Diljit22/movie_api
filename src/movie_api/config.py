@@ -26,4 +26,4 @@ class Settings(BaseSettings):
         return timedelta(hours=self.cache_duration_hours)
 
 
-settings = Settings()
+settings = Settings()  # type: ignore[call-arg]
