@@ -1,9 +1,9 @@
 """
 Configuration management for the Movie API.
 
-This module uses Pydantic's BaseSettings to load and validate
-configuration variables from environment variables and .env files.
-Provides a single, typed `settings` object for use throughout the app.
+Uses Pydantic's BaseSettings to load and validate configuration variables
+from environment variables and .env files. Provides a single,
+typed `settings` object for use throughout the app.
 """
 
 from datetime import timedelta
