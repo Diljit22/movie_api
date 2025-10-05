@@ -7,7 +7,7 @@ import logging
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse, Response
 
-from movie_api.routers import movies
+from movie_api.routers import favorites, movies
 from movie_api.schemas import ErrorDetail, ErrorResponse
 
 logging.basicConfig(
@@ -37,6 +37,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 
 
 app.include_router(movies.router)
+app.include_router(favorites.router)
 
 
 @app.get("/", tags=["Root"])
