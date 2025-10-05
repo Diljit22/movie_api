@@ -1,0 +1,51 @@
+[project]
+name = "movie-api"
+version = "1.0.0"
+description = "Movie API with TMDB integration"
+authors = [
+    {name = "Diljit Singh", email = "DiljitSingh22@gmail.com"}
+]
+requires-python = ">=3.13"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.5",
+    "pytest-cov>=6.2.1",
+    "ruff>=0.11.6",
+    "mypy>=1.15.0",
+]
+
+[build-system]
+requires = ["setuptools>=79.0.1"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# Ruff configuration
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # import sorting
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+]
+ignore = [
+    "E501",  # handled by formatter
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+# MyPy configuration
+[tool.mypy]
+python_version = "3.13"
+ignore_missing_imports = true
