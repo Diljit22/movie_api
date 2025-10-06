@@ -7,7 +7,7 @@ This application serves as an API layer for a movie browsing application, provid
 - **Persistent Favorites:** Full CRUD functionality for a user's favorite movies, saved locally.
 - **Performance Caching:** API responses for movie data are cached locally to minimize network calls and improve response times.
 - **Asynchronous**: Performant non-blocking API calls done via Python's async/await.
-- **Test Suite:** Includes both unit and integration tests with 88% code coverage.
+- **Test Suite:** Includes both unit and integration tests with ~90% code coverage.
 
 ## Tech Stack
 
