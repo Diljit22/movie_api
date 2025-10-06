@@ -6,7 +6,7 @@ service implementations must follow.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Literal
 
 
 class CacheInterface(ABC):
@@ -27,7 +27,7 @@ class MovieServiceInterface(ABC):
     """Abstract interface for a service that provides movie data."""
 
     @abstractmethod
-    async def get_trending_movies(self) -> dict:
+    async def get_trending_movies(self, time_window: Literal["day", "week"]) -> dict:
         """Fetches the list of trending movies."""
         pass
 

@@ -19,9 +19,9 @@ BASE_URL = "https://api.themoviedb.org/3"
 class TMDBService(MovieServiceInterface):
     """Service that fetches movie data from the TMDB API."""
 
-    async def get_trending_movies(self) -> dict:
+    async def get_trending_movies(self, time_window: str) -> dict:
         """Get the trending movie list."""
-        url = f"{BASE_URL}/trending/movie/day"
+        url = f"{BASE_URL}/trending/movie/{time_window}"
         params = {"api_key": settings.tmdb_api_key}
         return await self._make_api_request(url, params)
 

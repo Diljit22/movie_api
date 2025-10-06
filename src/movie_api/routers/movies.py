@@ -5,6 +5,7 @@ This router is decoupled from the underlying service implementations
 through the use of FastAPI's dependency injection system.
 """
 
+from enum import Enum
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -19,8 +20,14 @@ CacheDep = Annotated[CacheInterface, Depends(get_cache)]
 MovieServiceDep = Annotated[MovieServiceInterface, Depends(get_movie_service)]
 
 
-@router.get("/trending", response_model=TrendingMoviesResponse)
+class TimeWindow(str, Enum):
+    DAY = "day"
+    WEEK = "week"
+
+
+@router.get("/trending/{time_window}", response_model=TrendingMoviesResponse)
 async def get_trending_movies(
+    time_window: TimeWindow,
     cache: CacheDep,
     movie_service: MovieServiceDep,
 ):
@@ -29,13 +36,13 @@ async def get_trending_movies(
 
     Endpoint is cached; response validated against TrendingMoviesResponse schema.
     """
-    cache_key = "trending_movies"
+    cache_key = f"trending_movies_{time_window.value}"
 
     cached_data = cache.get(cache_key)
     if cached_data:
         return cached_data
 
-    fresh_data = await movie_service.get_trending_movies()
+    fresh_data = await movie_service.get_trending_movies(time_window=time_window.value)
     cache.set(cache_key, fresh_data)
 
     return fresh_data
