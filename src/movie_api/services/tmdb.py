@@ -19,17 +19,31 @@ BASE_URL = "https://api.themoviedb.org/3"
 class TMDBService(MovieServiceInterface):
     """Service that fetches movie data from the TMDB API."""
 
+    def _transform_movie_data(self, movie: dict) -> dict:
+        """Constructs the full poster path URL."""
+        if movie.get("poster_path"):
+            movie["poster_path"] = (
+                f"{settings.tmdb_image_base_url}{movie['poster_path']}"
+            )
+        return movie
+
     async def get_trending_movies(self, time_window: str) -> dict:
         """Get the trending movie list."""
         url = f"{BASE_URL}/trending/movie/{time_window}"
         params = {"api_key": settings.tmdb_api_key}
-        return await self._make_api_request(url, params)
+        data = await self._make_api_request(url, params)
+
+        data["results"] = [
+            self._transform_movie_data(movie) for movie in data["results"]
+        ]
+        return data
 
     async def get_movie_details(self, movie_id: int) -> dict:
         """Get movie details."""
         url = f"{BASE_URL}/movie/{movie_id}"
         params = {"api_key": settings.tmdb_api_key}
-        return await self._make_api_request(url, params)
+        movie_details = await self._make_api_request(url, params)
+        return self._transform_movie_data(movie_details)
 
     async def _make_api_request(self, url: str, params: dict) -> dict:
         """Helper method performing async HTTP request."""

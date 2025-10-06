@@ -48,7 +48,7 @@ class FakeMovieService(MovieServiceInterface):
                     "id": 1,
                     "title": "Fake Trending Movie",
                     "overview": "...",
-                    "poster_path": "",
+                    "poster_path": "https://image.tmdb.org/t/p/w500/fake_path.jpg",
                     "release_date": "",
                 }
             ],

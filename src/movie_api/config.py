@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     """Defines the application's configuration settings."""
 
     tmdb_api_key: str
+    tmdb_image_base_url: str = "https://image.tmdb.org/t/p/w500"
     cache_duration_hours: int = 1
     cache_filepath: str = ".data/cache.json"
     favorites_filepath: str = ".data/favorites.json"

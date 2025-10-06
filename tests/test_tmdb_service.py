@@ -14,14 +14,20 @@ from movie_api.services.tmdb import TMDBService
 @pytest.mark.asyncio
 async def test_get_trending_movies_success(httpx_mock):
     """Tests a successful API call to fetch trending movies."""
-    mock_response_data = {"results": [{"id": 1, "title": "Test Movie"}]}
+    mock_response_data = {
+        "results": [{"id": 1, "title": "Test Movie", "poster_path": "/test.jpg"}]
+    }
     url_pattern = re.compile(r".*/trending/movie/day.*")
     httpx_mock.add_response(url=url_pattern, json=mock_response_data)
 
     service = TMDBService()
     result = await service.get_trending_movies(time_window="day")
 
-    assert result == mock_response_data
+    expected_path = "https://image.tmdb.org/t/p/w500/test.jpg"
+    assert result["results"][0]["poster_path"] == expected_path
+
+    assert result["results"][0]["id"] == 1
+    assert result["results"][0]["title"] == "Test Movie"
 
 
 @pytest.mark.httpx
