@@ -8,6 +8,7 @@ __pycache__/
 # Build Artifacts
 *.egg-info/
 *.egg
+build/
 
 # Generated Data + Reports
 .data/

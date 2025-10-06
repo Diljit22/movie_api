@@ -72,14 +72,14 @@ markers = [
 ]
 addopts = [
     "--strict-markers",
-    "--cov=movie_api",
+    "--cov=src/movie_api",
     "--cov-report=term-missing",
     "--cov-report=html",
 ]
 
 # Coverage configuration
 [tool.coverage.run]
-source = ["movie_api"]
+source = ["src/movie_api"]
 omit = [
     "*/tests/*",
     "*/__init__.py",
