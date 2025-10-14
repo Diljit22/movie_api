@@ -38,7 +38,7 @@ async def get_trending_movies(
     """
     cache_key = f"trending_movies_{time_window.value}"
 
-    cached_data = cache.get(cache_key)
+    cached_data = await cache.get(cache_key)
     if cached_data:
         return cached_data
 
@@ -61,7 +61,7 @@ async def get_movie_details(
     """
     cache_key = f"movie_details_{movie_id}"
 
-    cached_data = cache.get(cache_key)
+    cached_data = await cache.get(cache_key)
     if cached_data:
         return cached_data
 

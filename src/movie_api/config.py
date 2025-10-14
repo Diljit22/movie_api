@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     cache_filepath: str = ".data/cache.json"
     favorites_filepath: str = ".data/favorites.json"
     use_in_memory_favorites = True
+    redis_url: str = "redis://localhost:6379"
     model_config = SettingsConfigDict(env_file=".env")
 
     @property

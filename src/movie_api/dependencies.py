@@ -9,6 +9,7 @@ API route handlers.
 import os
 
 from movie_api.cache import JSONFileCache
+from movie_api.cache_redis import RedisCache
 from movie_api.config import settings
 from movie_api.interfaces import (
     CacheInterface,
@@ -21,7 +22,10 @@ from movie_api.services.tmdb import TMDBService
 
 data_dir = os.path.dirname(settings.cache_filepath)
 os.makedirs(data_dir, exist_ok=True)
-_cache_instance = JSONFileCache(filepath=settings.cache_filepath)
+
+#_cache_instance = JSONFileCache(filepath=settings.cache_filepath)
+_cache_instance = RedisCache(redis_url=settings.redis_url)
+
 
 if settings.use_in_memory_favorites:
     _favorites_instance = InMemoryFavorites()
@@ -42,5 +46,3 @@ def get_movie_service() -> MovieServiceInterface:
 def get_favorites_service() -> FavoritesInterface:
     """Dependency provider for the favorites service."""
     return _favorites_instance
-
-
