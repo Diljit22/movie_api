@@ -69,3 +69,13 @@ async def get_movie_details(
     cache.set(cache_key, fresh_data)
 
     return fresh_data
+
+
+@router.get("/search", response_model=TrendingMoviesResponse)
+async def search_movies(query: str, movies: MovieServiceDep):
+    """
+    Fetches movie details via query.
+
+    Endpoint is NOT cached; response validated against MovieDetail schema.
+    """
+    return await movies.search_movies(query)

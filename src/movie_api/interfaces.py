@@ -35,6 +35,11 @@ class MovieServiceInterface(ABC):
     async def get_movie_details(self, movie_id: int) -> dict:
         """Fetches details for a specific movie by its ID."""
         pass
+    
+    @abstractmethod
+    async def search_movies(self, query: str) -> dict:
+        """Searches for movies by a query string."""
+        pass
 
 
 class FavoritesInterface(ABC):

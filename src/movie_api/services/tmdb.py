@@ -45,6 +45,18 @@ class TMDBService(MovieServiceInterface):
         movie_details = await self._make_api_request(url, params)
         return self._transform_movie_data(movie_details)
 
+    async def search_movies(self, query):
+        """Search for movie on TMDB by a query string."""
+        url = f"{BASE_URL}/search/movie"
+        params = {"api_key": settings.tmdb_api_key, "query": query}
+        data = await self._make_api_request(url, params)
+        if data.get("results"):
+            data["results"] = [
+                self._transform_movie_data(movie) for movie in data["results"]
+            ]
+        return data
+        
+
     async def _make_api_request(self, url: str, params: dict) -> dict:
         """Helper method performing async HTTP request."""
         async with httpx.AsyncClient() as client:
