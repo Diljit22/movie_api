@@ -16,13 +16,18 @@ from movie_api.interfaces import (
     MovieServiceInterface,
 )
 from movie_api.services.favorites_service import JSONFileFavorites
+from movie_api.services.in_memory_favorites import InMemoryFavorites
 from movie_api.services.tmdb import TMDBService
 
 data_dir = os.path.dirname(settings.cache_filepath)
 os.makedirs(data_dir, exist_ok=True)
 _cache_instance = JSONFileCache(filepath=settings.cache_filepath)
 
-_favorites_instance = JSONFileFavorites(filepath=settings.favorites_filepath)
+USE_IN_MEMORY_FAVORITES = True
+if USE_IN_MEMORY_FAVORITES:
+    _favorites_instance = InMemoryFavorites()
+else:
+    _favorites_instance = JSONFileFavorites(filepath=settings.favorites_filepath)
 
 
 def get_cache() -> CacheInterface:
@@ -38,3 +43,5 @@ def get_movie_service() -> MovieServiceInterface:
 def get_favorites_service() -> FavoritesInterface:
     """Dependency provider for the favorites service."""
     return _favorites_instance
+
+
