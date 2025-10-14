@@ -9,8 +9,8 @@ class InMemoryFavorites(FavoritesInterface):
     """
     Stores fav movie ID in memory; lost on restart.
     """
-    def __init__(self, _fav):
-        self._fav = _fav
+    def __init__(self):
+        self._fav = []
         
     def add(self, movie_id):
         if movie_id not in self._fav:
