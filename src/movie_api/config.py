@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     cache_duration_hours: int = 1
     cache_filepath: str = ".data/cache.json"
     favorites_filepath: str = ".data/favorites.json"
+    use_in_memory_favorites = True
     model_config = SettingsConfigDict(env_file=".env")
 
     @property

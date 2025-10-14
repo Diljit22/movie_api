@@ -23,8 +23,7 @@ data_dir = os.path.dirname(settings.cache_filepath)
 os.makedirs(data_dir, exist_ok=True)
 _cache_instance = JSONFileCache(filepath=settings.cache_filepath)
 
-USE_IN_MEMORY_FAVORITES = True
-if USE_IN_MEMORY_FAVORITES:
+if settings.use_in_memory_favorites:
     _favorites_instance = InMemoryFavorites()
 else:
     _favorites_instance = JSONFileFavorites(filepath=settings.favorites_filepath)
