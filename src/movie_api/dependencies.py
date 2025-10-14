@@ -8,7 +8,7 @@ API route handlers.
 
 import os
 
-from movie_api.cache import JSONFileCache
+#from movie_api.cache import JSONFileCache
 from movie_api.cache_redis import RedisCache
 from movie_api.config import settings
 from movie_api.interfaces import (
