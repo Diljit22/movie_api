@@ -6,9 +6,6 @@ create and inject instances of our service and cache classes into the
 API route handlers.
 """
 
-import os
-
-#from movie_api.cache import JSONFileCache
 from movie_api.services.cache_redis import RedisCache
 from movie_api.config import settings
 from movie_api.interfaces import (
@@ -16,21 +13,32 @@ from movie_api.interfaces import (
     FavoritesInterface,
     MovieServiceInterface,
 )
-from movie_api.services.favorites_service import JSONFileFavorites
+from movie_api.services.favorites_service_json import JSONFileFavorites
 from movie_api.services.in_memory_favorites import InMemoryFavorites
 from movie_api.services.tmdb import TMDBService
 
-data_dir = os.path.dirname(settings.cache_filepath)
-os.makedirs(data_dir, exist_ok=True)
+FAVORITES_IMPLEMENTATIONS = {
+    "json_file": JSONFileFavorites,
+    "in_memory": InMemoryFavorites,
+}
 
-#_cache_instance = JSONFileCache(filepath=settings.cache_filepath)
+def create_favorites_instance() -> FavoritesInterface:
+    """Factory function to create the appropriate favorites service instance."""
+    impl_key = settings.favorites_implementation
+    ImplementationClass = FAVORITES_IMPLEMENTATIONS.get(impl_key)
+
+    if not ImplementationClass:
+        raise ValueError(f"Unknown favorites_implementation: '{impl_key}'")
+
+    if ImplementationClass == JSONFileFavorites:
+        return JSONFileFavorites(filepath=settings.favorites_filepath)
+
+    else:
+        # No-arg constructors (e.g. InMemoryFavorites)
+        return ImplementationClass()
+
 _cache_instance = RedisCache(redis_url=settings.redis_url)
-
-
-if settings.use_in_memory_favorites:
-    _favorites_instance = InMemoryFavorites()
-else:
-    _favorites_instance = JSONFileFavorites(filepath=settings.favorites_filepath)
+_favorites_instance = create_favorites_instance()
 
 
 def get_cache() -> CacheInterface:
