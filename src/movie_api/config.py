@@ -16,11 +16,15 @@ class Settings(BaseSettings):
 
     tmdb_api_key: str
     tmdb_image_base_url: str = "https://image.tmdb.org/t/p/w500"
+    
     cache_duration_hours: int = 1
     cache_filepath: str = ".data/cache.json"
+    cache_implementation: Literal["redis", "json_file"] = "redis"
+    redis_url: str = "redis://localhost:6379"
+    
     favorites_filepath: str = ".data/favorites.json"
     favorites_implementation: Literal["in_memory", "json_file", "postgres"] = "in_memory"
-    redis_url: str = "redis://localhost:6379"
+
     model_config = SettingsConfigDict(env_file=".env")
 
     @property
