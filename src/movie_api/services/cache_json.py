@@ -20,6 +20,9 @@ class JSONFileCache(CacheInterface):
 
     def __init__(self, filepath: str):
         self._filepath = filepath
+        # Ensure the directory for the cache file exists.
+        data_dir = os.path.dirname(self._filepath)
+        os.makedirs(data_dir, exist_ok=True)
         self._cache = self._load_cache_from_file()
 
     def _load_cache_from_file(self) -> dict[str, Any]:
