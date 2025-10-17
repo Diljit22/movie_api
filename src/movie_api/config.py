@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     
     favorites_filepath: str = ".data/favorites.json"
     favorites_implementation: Literal["in_memory", "json_file", "postgres"] = "in_memory"
-
+    database_url: str = "postgresql://user:password@localhost/movie_db"
     model_config = SettingsConfigDict(env_file=".env")
 
     @property
