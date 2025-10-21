@@ -2,7 +2,7 @@
 Unit tests for the JSONFileFavorites service.
 """
 
-from movie_api.services.favorites_service import JSONFileFavorites
+from movie_api.services.favorites_service_json import JSONFileFavorites
 
 
 def test_favorites_add_and_check(tmp_path):

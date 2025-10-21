@@ -1,6 +1,0 @@
-# TODO
-
-    1. Test new changes
-    2. Add proper docs
-    3. Make config: Redis vs Json cache
-    4. docker container for redis
