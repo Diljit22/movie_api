@@ -7,7 +7,7 @@ import re
 import pytest
 from fastapi import HTTPException
 
-from movie_api.services.tmdb import TMDBService
+from movie_service.src.movie_api.services.tmdb import TMDBService
 
 
 @pytest.mark.httpx

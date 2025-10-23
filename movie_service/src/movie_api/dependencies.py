@@ -6,8 +6,8 @@ create and inject instances of our service and cache classes into the
 API route handlers.
 """
 from functools import cache
-from movie_api.services.cache_json import JSONFileCache
-from movie_api.services.cache_redis import RedisCache
+from movie_service.src.movie_api.services.cache_json import JSONFileCache
+from movie_service.src.movie_api.services.cache_redis import RedisCache
 from movie_api.config import settings
 from movie_api.interfaces import (
     CacheInterface,
@@ -16,7 +16,7 @@ from movie_api.interfaces import (
 )
 from movie_api.services.favorites_service_json import JSONFileFavorites
 from movie_api.services.in_memory_favorites import InMemoryFavorites
-from movie_api.services.tmdb import TMDBService
+from movie_service.src.movie_api.services.tmdb import TMDBService
 
 CACHE_IMPLEMENTATIONS = {
     "redis": lambda: RedisCache(redis_url=settings.redis_url),
