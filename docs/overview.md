@@ -22,9 +22,9 @@ graph TD
             L2_Cache_User[(L2: Redis Cache)]
         end
 
-        subgraph "Recommendation Service (Future)"
+        subgraph "Recommendation Service"
             Reco_API[FastAPI App]
-            Message_Broker[Message Broker e.g., RabbitMQ]
+            Message_Broker[Message Broker: RabbitMQ]
             Reco_DB[(Vector DB / Cache)]
         end
     end
