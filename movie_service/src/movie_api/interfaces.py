@@ -13,12 +13,12 @@ class CacheInterface(ABC):
     """Abstract interface for a key-value cache."""
 
     @abstractmethod
-    def get(self, key: str) -> Any | None:
+    async def get(self, key: str) -> Any | None:
         """Retrieves an item from the cache."""
         pass
 
     @abstractmethod
-    def set(self, key: str, data: Any) -> None:
+    async def set(self, key: str, data: Any) -> None:
         """Stores an item in the cache."""
         pass
 
@@ -35,7 +35,7 @@ class MovieServiceInterface(ABC):
     async def get_movie_details(self, movie_id: int) -> dict:
         """Fetches details for a specific movie by its ID."""
         pass
-    
+
     @abstractmethod
     async def search_movies(self, query: str) -> dict:
         """Searches for movies by a query string."""

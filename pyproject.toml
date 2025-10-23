@@ -1,7 +1,7 @@
 [project]
 name = "movie-api"
 version = "1.0.0"
-description = "Movie API with TMDB integration"
+description = "Movie API with TMDB integration and mulit-level caching"
 authors = [
     {name = "Diljit Singh", email = "DiljitSingh22@gmail.com"}
 ]
@@ -29,7 +29,14 @@ requires = ["setuptools>=79.0.1"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["."]
+include = [
+    "movie_service*",
+    "user_service*",
+    ]
+
+[tool.setuptools.package-data]
+"*" = ["py.typed"]
 
 # Ruff configuration
 [tool.ruff]
@@ -57,30 +64,54 @@ indent-style = "space"
 # MyPy configuration
 [tool.mypy]
 python_version = "3.13"
+mypy_path = "."
+explicit_package_bases = true
+namespace_packages = true
 warn_return_any = true
 warn_unused_configs = true
+disallow_untyped_defs = false
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "redis.*",
+    "httpx.*",
+]
 ignore_missing_imports = true
 
 # Pytest configuration
 [tool.pytest.ini_options]
+pythonpath = ["."]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 asyncio_mode = "auto"
 markers = [
-    "httpx: Marks tests that use the httpx_mock fixture"
+    "httpx: Marks tests that use the httpx_mock fixture",
+    "integration: Integration tests requiring external services",
+    "unit: Fast unit tests",
 ]
 addopts = [
     "--strict-markers",
-    "--cov=src/movie_api",
+    "--cov=movie_service/src/movie_api",
+    "--cov=user_service/src/user_api",
     "--cov-report=term-missing",
     "--cov-report=html",
+    "--cov-report=xml",
+    "-v",
 ]
 
 # Coverage configuration
 [tool.coverage.run]
-source = ["src/movie_api"]
+source = [
+    "movie_service/src",
+    "user_service/src"
+    ]
 omit = [
     "*/tests/*",
     "*/__init__.py",
@@ -95,3 +126,5 @@ exclude_lines = [
     "if __name__ == .__main__.:",
     "if TYPE_CHECKING:",
 ]
+precision = 2
+show_missing = true

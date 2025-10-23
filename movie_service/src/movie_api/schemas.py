@@ -5,7 +5,7 @@ These schemas are used by FastAPI for data validation, serialization,
 and generating OpenAPI documentation.
 """
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ErrorDetail(BaseModel):
@@ -46,3 +46,37 @@ class MovieDetail(MovieBase):
     status: str
     vote_average: float
     vote_count: int
+
+
+class BatchMovieRequest(BaseModel):
+    """Request model for batch movie fetching."""
+
+    movie_ids: list[int] = Field(
+        ...,
+        description="List of movie IDs to fetch",
+        min_length=1,
+        max_length=50,
+        examples=[[550, 551, 552]],
+    )
+
+
+class BatchMovieError(BaseModel):
+    """Error details for a failed movie fetch in batch operation."""
+
+    movie_id: int
+    error: str
+
+
+class BatchMovieResponse(BaseModel):
+    """Response model for batch movie fetching."""
+
+    movies: list[MovieDetail] = Field(
+        ..., description="Successfully fetched movie details"
+    )
+    total_requested: int = Field(
+        ..., description="Total number of unique movies requested"
+    )
+    total_found: int = Field(..., description="Number of movies successfully fetched")
+    errors: list[BatchMovieError] | None = Field(
+        None, description="List of movies that failed to fetch"
+    )

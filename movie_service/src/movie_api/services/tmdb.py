@@ -10,8 +10,8 @@ from typing import cast
 import httpx
 from fastapi import HTTPException
 
-from movie_api.config import settings
-from movie_api.interfaces import MovieServiceInterface
+from movie_service.src.movie_api.config import settings
+from movie_service.src.movie_api.interfaces import MovieServiceInterface
 
 BASE_URL = "https://api.themoviedb.org/3"
 
@@ -55,7 +55,6 @@ class TMDBService(MovieServiceInterface):
                 self._transform_movie_data(movie) for movie in data["results"]
             ]
         return data
-        
 
     async def _make_api_request(self, url: str, params: dict) -> dict:
         """Helper method performing async HTTP request."""

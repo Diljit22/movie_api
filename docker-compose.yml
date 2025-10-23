@@ -1,24 +1,107 @@
+version: '3.8'
+
 services:
+  movie_service:
+    build:
+      context: .
+      dockerfile: movie_service/Dockerfile
+    container_name: movie_service
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - CACHE_IMPLEMENTATION=redis
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./movie_service/src:/app/movie_service/src
+      - movie_cache:/app/.data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - app_network
+
+  user_service:
+    build:
+      context: .
+      dockerfile: user_service/Dockerfile
+    container_name: user_service
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres:5432/movie_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./user_service/src:/app/user_service/src
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - app_network
+
   redis:
-    image: "redis:8-alpine"
+    image: redis:8-alpine
     container_name: movie_app_redis
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - app_network
 
   postgres:
-    image: "postgres:17-alpine"
+    image: postgres:17-alpine
     container_name: movie_app_postgres
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: movie_db
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d movie_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - app_network
 
 volumes:
   redis_data:
+    driver: local
   postgres_data:
+    driver: local
+  movie_cache:
+    driver: local
+
+networks:
+  app_network:
+    driver: bridge

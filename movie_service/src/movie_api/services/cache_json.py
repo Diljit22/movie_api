@@ -11,8 +11,8 @@ import os
 from datetime import UTC, datetime
 from typing import Any, cast
 
-from movie_api.config import settings
-from movie_api.interfaces import CacheInterface
+from movie_service.src.movie_api.config import settings
+from movie_service.src.movie_api.interfaces import CacheInterface
 
 
 class JSONFileCache(CacheInterface):
@@ -26,6 +26,7 @@ class JSONFileCache(CacheInterface):
         self._cache = self._load_cache_from_file()
 
     def _load_cache_from_file(self) -> dict[str, Any]:
+        """Loads cache data from the JSON file."""
         if os.path.exists(self._filepath):
             with open(self._filepath) as f:
                 try:
@@ -38,10 +39,11 @@ class JSONFileCache(CacheInterface):
         return {}
 
     def _save_cache_to_file(self):
+        """Saves the current cache to the JSON file."""
         with open(self._filepath, "w") as f:
             json.dump(self._cache, f, indent=2)
 
-    def get(self, key: str) -> Any | None:
+    async def get(self, key: str) -> Any | None:
         """Gets an item from the cache if the key exists and the item is not stale."""
         if key in self._cache:
             cached_item = self._cache[key]
@@ -54,7 +56,7 @@ class JSONFileCache(CacheInterface):
         logging.info(f"Cache miss for key: '{key}'")
         return None
 
-    def set(self, key: str, data: Any):
+    async def set(self, key: str, data: Any) -> None:
         """Sets an item in the cache and saves it to the file."""
         self._cache[key] = {
             "timestamp": datetime.now(UTC).isoformat(),
