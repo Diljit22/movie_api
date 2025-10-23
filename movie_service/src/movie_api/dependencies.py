@@ -14,8 +14,6 @@ from movie_api.interfaces import (
     FavoritesInterface,
     MovieServiceInterface,
 )
-from movie_api.services.favorites_service_json import JSONFileFavorites
-from movie_api.services.in_memory_favorites import InMemoryFavorites
 from movie_service.src.movie_api.services.tmdb import TMDBService
 
 CACHE_IMPLEMENTATIONS = {
@@ -23,10 +21,6 @@ CACHE_IMPLEMENTATIONS = {
     "json_file": lambda: JSONFileCache(filepath=settings.cache_filepath),
 }
 
-FAVORITES_IMPLEMENTATIONS = {
-    "json_file": lambda: JSONFileFavorites(filepath=settings.favorites_filepath),
-    "in_memory": lambda: InMemoryFavorites(),
-}
 
 @cache
 def get_cache() -> CacheInterface:
@@ -34,14 +28,6 @@ def get_cache() -> CacheInterface:
     factory = CACHE_IMPLEMENTATIONS.get(settings.cache_implementation)
     if not factory:
         raise ValueError(f"Unknown cache_implementation: '{settings.cache_implementation}'")
-    return factory()
-
-@cache
-def get_favorites_service() -> FavoritesInterface:
-    """Dependency provider for the favorites service."""
-    factory = FAVORITES_IMPLEMENTATIONS.get(settings.favorites_implementation)
-    if not factory:
-        raise ValueError(f"Unknown favorites_implementation: '{settings.favorites_implementation}'")
     return factory()
 
 @cache

@@ -46,22 +46,3 @@ class MovieDetail(MovieBase):
     status: str
     vote_average: float
     vote_count: int
-
-
-class FavoriteResponse(BaseModel):
-    """Defines model for confirming a movie has been marked as favorite."""
-
-    message: str
-    movie_id: int
-
-
-class IsFavoriteResponse(BaseModel):
-    """Defines model indicating whether a movie is marked as favorite."""
-
-    is_favorite: bool
-
-
-class AllFavoritesResponse(BaseModel):
-    """Defines model for retrieving all favorited movie IDs."""
-
-    favorites: list[int]

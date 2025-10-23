@@ -40,27 +40,3 @@ class MovieServiceInterface(ABC):
     async def search_movies(self, query: str) -> dict:
         """Searches for movies by a query string."""
         pass
-
-
-class FavoritesInterface(ABC):
-    """Abstract interface for managing favorite movies."""
-
-    @abstractmethod
-    def add(self, movie_id: int) -> None:
-        """Add a movie to favorites."""
-        pass
-
-    @abstractmethod
-    def remove(self, movie_id: int) -> None:
-        """Remove a movie from favorites."""
-        pass
-
-    @abstractmethod
-    def get_all(self) -> list[int]:
-        """Get all favorite movie IDs."""
-        pass
-
-    @abstractmethod
-    def is_favorite(self, movie_id: int) -> bool:
-        """Check if a movie is in favorites."""
-        pass

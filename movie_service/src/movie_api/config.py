@@ -22,9 +22,6 @@ class Settings(BaseSettings):
     cache_implementation: Literal["redis", "json_file"] = "redis"
     redis_url: str = "redis://localhost:6379"
     
-    favorites_filepath: str = ".data/favorites.json"
-    favorites_implementation: Literal["in_memory", "json_file", "postgres"] = "in_memory"
-    database_url: str = "postgresql://user:password@localhost/movie_db"
     model_config = SettingsConfigDict(env_file=".env")
 
     @property
