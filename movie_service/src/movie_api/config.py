@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     
     cache_duration_hours: int = 1
     cache_filepath: str = ".data/cache.json"
-    cache_implementation: Literal["redis", "json_file"] = "redis"
+    cache_implementation: Literal["redis", "json_file", "in_memory"] = "redis"
     redis_url: str = "redis://localhost:6379"
     
     model_config = SettingsConfigDict(env_file=".env")
