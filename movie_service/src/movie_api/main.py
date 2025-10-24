@@ -3,15 +3,16 @@ Main application file for the Movie API.
 """
 
 import logging
-import uuid
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse, Response
-from starlette.middleware.base import BaseHTTPMiddleware
+from prometheus_client import make_asgi_app
 
+from movie_service.src.movie_api.middleware.request_id import RequestIDMiddleware
+from movie_service.src.movie_api.monitoring.cache_stats import CacheStats
 from movie_service.src.movie_api.routers import movies
 from movie_service.src.movie_api.schemas import ErrorDetail, ErrorResponse
 
@@ -23,81 +24,6 @@ logging.basicConfig(
 # Prevents API leak in errors
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.getLogger("httpcore").setLevel(logging.WARNING)
-
-
-# Global cache statistics
-class CacheStats:
-    """Thread-safe cache statistics tracker."""
-
-    def __init__(self):
-        self.l1_hits = 0
-        self.l1_misses = 0
-        self.l2_hits = 0
-        self.l2_misses = 0
-        self.api_calls = 0
-
-    def record_l1_hit(self):
-        self.l1_hits += 1
-
-    def record_l1_miss(self):
-        self.l1_misses += 1
-
-    def record_l2_hit(self):
-        self.l2_hits += 1
-
-    def record_l2_miss(self):
-        self.l2_misses += 1
-
-    def record_api_call(self):
-        self.api_calls += 1
-
-    @property
-    def total_requests(self):
-        return self.l1_hits + self.l1_misses
-
-    @property
-    def l1_hit_rate(self):
-        total = self.total_requests
-        return (self.l1_hits / total * 100) if total > 0 else 0
-
-    @property
-    def l2_hit_rate(self):
-        total = self.l2_hits + self.l2_misses
-        return (self.l2_hits / total * 100) if total > 0 else 0
-
-    def to_dict(self):
-        return {
-            "l1": {
-                "hits": self.l1_hits,
-                "misses": self.l1_misses,
-                "hit_rate": f"{self.l1_hit_rate:.2f}%",
-            },
-            "l2": {
-                "hits": self.l2_hits,
-                "misses": self.l2_misses,
-                "hit_rate": f"{self.l2_hit_rate:.2f}%",
-            },
-            "api_calls": self.api_calls,
-            "total_requests": self.total_requests,
-        }
-
-
-cache_stats = CacheStats()
-
-
-# Request ID Middleware
-class RequestIDMiddleware(BaseHTTPMiddleware):
-    """Adds a unique request ID to each request for tracing."""
-
-    async def dispatch(self, request: Request, call_next):
-        request_id = str(uuid.uuid4())
-        request.state.request_id = request_id
-
-        response = await call_next(request)
-        response.headers["X-Request-ID"] = request_id
-
-        return response
-
 
 # Lifespan context manager for startup/shutdown
 @asynccontextmanager
@@ -116,6 +42,9 @@ app = FastAPI(
     version="1.0.0",
     description="Movie API with TMDB integration and multi-level caching",
 )
+
+metrics_app = make_asgi_app()
+app.mount("/prometheus", metrics_app)
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.add_middleware(RequestIDMiddleware)
