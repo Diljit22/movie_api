@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     cache_implementation: Literal["redis", "json_file", "in_memory"] = "redis"
     redis_url: str = "redis://localhost:6379"
 
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @property
     def cache_duration(self) -> timedelta:

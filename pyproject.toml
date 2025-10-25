@@ -27,6 +27,7 @@ dev = [
     "mypy>=1.15.0",
     "pytest-asyncio>=1.2.0",
     "pytest-httpx>=0.35.0",
+    "fakeredis[asyncio]>=2.32.0",
 ]
 
 [build-system]
@@ -96,6 +97,7 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 markers = [
     "httpx: Marks tests that use the httpx_mock fixture",
     "integration: Integration tests requiring external services",
