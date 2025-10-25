@@ -1,67 +1,40 @@
 """
-Defines the data structures for API responses and error models.
-
-These schemas are used by FastAPI for data validation, serialization,
-and generating OpenAPI documentation.
+Defines data structures for API requests, responses, and error models.
 """
 
-from pydantic import BaseModel
+from datetime import datetime
+from pydantic import BaseModel, EmailStr, Field
 
 
 class ErrorDetail(BaseModel):
-    """Defines the structure for a detailed error message."""
-
     message: str
 
-
 class ErrorResponse(BaseModel):
-    """Defines the standardized JSON structure for API error responses."""
-
     detail: ErrorDetail
 
 
-class MovieBase(BaseModel):
-    """Base model for a movie, containing common fields."""
+class UserBase(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50)
+    email: EmailStr
 
+class UserCreate(UserBase):
+    password: str = Field(..., min_length=8)
+
+class User(UserBase):
     id: int
-    title: str
-    overview: str
-    poster_path: str | None = None
-    release_date: str
+    created_at: datetime
 
-
-class TrendingMoviesResponse(BaseModel):
-    """Defines the response structure for the trending movies endpoint."""
-
-    page: int
-    results: list[MovieBase]
-    total_pages: int
-    total_results: int
-
-
-class MovieDetail(MovieBase):
-    """Extends the base movie model with additional details."""
-
-    tagline: str | None = None
-    status: str
-    vote_average: float
-    vote_count: int
+    class Config:
+        from_attributes = True # Pydantic v2 alias for orm_mode
 
 
 class FavoriteResponse(BaseModel):
-    """Defines model for confirming a movie has been marked as favorite."""
-
     message: str
+    user_id: int
     movie_id: int
 
-
 class IsFavoriteResponse(BaseModel):
-    """Defines model indicating whether a movie is marked as favorite."""
-
     is_favorite: bool
 
-
 class AllFavoritesResponse(BaseModel):
-    """Defines model for retrieving all favorited movie IDs."""
-
     favorites: list[int]

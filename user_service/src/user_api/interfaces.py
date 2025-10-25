@@ -1,66 +1,50 @@
 """
-Defines the abstract interfaces for services used in the Movie API.
-
-These abstract base classes will define the "contracts" that concrete
-service implementations must follow.
+Defines the abstract interfaces for services in the User API.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Literal
+from typing import Any
 
+from user_service.src.user_api.schemas import User, UserCreate
 
-class CacheInterface(ABC):
-    """Abstract interface for a key-value cache."""
+class FavoritesServiceInterface(ABC):
+    """Abstract interface for managing a user's favorite movies."""
 
     @abstractmethod
-    def get(self, key: str) -> Any | None:
-        """Retrieves an item from the cache."""
+    def add(self, user_id: int, movie_id: int) -> None:
+        """Add a movie to a user's favorites."""
         pass
 
     @abstractmethod
-    def set(self, key: str, data: Any) -> None:
-        """Stores an item in the cache."""
-        pass
-
-
-class MovieServiceInterface(ABC):
-    """Abstract interface for a service that provides movie data."""
-
-    @abstractmethod
-    async def get_trending_movies(self, time_window: Literal["day", "week"]) -> dict:
-        """Fetches the list of trending movies."""
+    def remove(self, user_id: int, movie_id: int) -> None:
+        """Remove a movie from a user's favorites."""
         pass
 
     @abstractmethod
-    async def get_movie_details(self, movie_id: int) -> dict:
-        """Fetches details for a specific movie by its ID."""
-        pass
-    
-    @abstractmethod
-    async def search_movies(self, query: str) -> dict:
-        """Searches for movies by a query string."""
-        pass
-
-
-class FavoritesInterface(ABC):
-    """Abstract interface for managing favorite movies."""
-
-    @abstractmethod
-    def add(self, movie_id: int) -> None:
-        """Add a movie to favorites."""
+    def get_all_for_user(self, user_id: int) -> list[int]:
+        """Get all favorite movie IDs for a specific user."""
         pass
 
     @abstractmethod
-    def remove(self, movie_id: int) -> None:
-        """Remove a movie from favorites."""
+    def is_favorite(self, user_id: int, movie_id: int) -> bool:
+        """Check if a movie is in a user's favorites."""
+        pass
+
+
+class UserServiceInterface(ABC):
+    """Abstract interface for managing users."""
+
+    @abstractmethod
+    def get_user_by_id(self, user_id: int) -> User | None:
+        """Retrieves a user by their ID."""
         pass
 
     @abstractmethod
-    def get_all(self) -> list[int]:
-        """Get all favorite movie IDs."""
+    def get_user_by_email(self, email: str) -> User | None:
+        """Retrieves a user by their email address."""
         pass
 
     @abstractmethod
-    def is_favorite(self, movie_id: int) -> bool:
-        """Check if a movie is in favorites."""
+    def create_user(self, user_data: UserCreate) -> User:
+        """Creates a new user and returns their data."""
         pass

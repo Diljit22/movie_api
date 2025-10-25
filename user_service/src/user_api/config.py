@@ -1,36 +1,21 @@
 """
-Configuration management for the Movie API.
-
-Uses Pydantic's BaseSettings to load and validate configuration variables
-from environment variables and .env files. Provides a single,
-typed `settings` object for use throughout the app.
+Configuration management for the User API.
 """
 from typing import Literal
-from datetime import timedelta
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
 class Settings(BaseSettings):
-    """Defines the application's configuration settings."""
+    """Defines the User Service's configuration settings."""
 
-    tmdb_api_key: str
-    tmdb_image_base_url: str = "https://image.tmdb.org/t/p/w500"
-    
-    cache_duration_hours: int = 1
-    cache_filepath: str = ".data/cache.json"
-    cache_implementation: Literal["redis", "json_file"] = "redis"
-    redis_url: str = "redis://localhost:6379"
-    
+    # Should match the DATABASE_URL in your .env file for docker-compose
+    database_url: str = "postgresql://user:password@postgres:5432/movie_db"
+
+    favorites_implementation: Literal["json_file", "in_memory"] = "json_file"
+    user_implementation: Literal["postgres", "in_memory"] = "postgres"
+
     favorites_filepath: str = ".data/favorites.json"
-    favorites_implementation: Literal["in_memory", "json_file", "postgres"] = "in_memory"
-    database_url: str = "postgresql://user:password@localhost/movie_db"
-    model_config = SettingsConfigDict(env_file=".env")
+    
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    @property
-    def cache_duration(self) -> timedelta:
-        """Returns the cache duration as a timedelta object for easy comparisons."""
-        return timedelta(hours=self.cache_duration_hours)
-
-
-settings = Settings()  # type: ignore[call-arg]
+settings = Settings()
