@@ -14,11 +14,11 @@ class ErrorResponse(BaseModel):
 
 
 class UserBase(BaseModel):
-    username: str = Field(..., min_length=3, max_length=50)
-    email: EmailStr
+    username: str = Field(..., min_length=3, max_length=50, examples=["john_doe"])
+    email: EmailStr = Field(..., examples=["johndoe@example.com"])
 
 class UserCreate(UserBase):
-    password: str = Field(..., min_length=8)
+    password: str = Field(..., min_length=8, examples=["a-very-strong-password123!"])
 
 class User(UserBase):
     id: int
