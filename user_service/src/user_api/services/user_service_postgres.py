@@ -3,8 +3,8 @@ Postgres implementation of the UserServiceInterface.
 """
 from sqlalchemy.orm import Session
 
-from .. import crud, schemas, security
-from ..interfaces import UserServiceInterface
+from user_service.src.user_api import crud, schemas, security
+from user_service.src.user_api.interfaces import UserServiceInterface
 
 
 class PostgresUserService(UserServiceInterface):

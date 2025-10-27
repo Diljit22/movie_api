@@ -11,10 +11,10 @@ from datetime import UTC, datetime
 from fastapi import FastAPI, HTTPException, Request, Response, status
 from fastapi.responses import JSONResponse
 
-from . import database, models
-from .middleware.request_id import RequestIDMiddleware
-from .routers import favorites, users
-from .schemas import ErrorDetail, ErrorResponse
+from user_service.src.user_api import database
+from user_service.src.user_api.middleware.request_id import RequestIDMiddleware
+from user_service.src.user_api.routers import favorites, users
+from user_service.src.user_api.schemas import ErrorDetail, ErrorResponse
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

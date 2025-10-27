@@ -3,9 +3,9 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from ..dependencies import get_user_service
-from ..interfaces import UserServiceInterface
-from ..schemas import User, UserCreate
+from user_service.src.user_api.dependencies import get_user_service
+from user_service.src.user_api.interfaces import UserServiceInterface
+from user_service.src.user_api.schemas import User, UserCreate
 
 router = APIRouter(prefix="/api/users", tags=["Users"])
 

@@ -5,8 +5,7 @@ import json
 import logging
 import os
 from collections import defaultdict
-
-from ..interfaces import FavoritesServiceInterface
+from user_service.src.user_api.interfaces import FavoritesServiceInterface
 
 
 class JSONFileFavoritesService(FavoritesServiceInterface):

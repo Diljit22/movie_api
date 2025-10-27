@@ -4,8 +4,7 @@ SQLAlchemy ORM models for the database tables.
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.sql import func
 
-from .database import Base
-
+from user_service.src.user_api.database import Base
 
 class User(Base):
     """

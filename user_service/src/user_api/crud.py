@@ -3,7 +3,7 @@ CRUD operations for interacting with the database models.
 """
 from sqlalchemy.orm import Session
 
-from . import models, schemas
+from user_service.src.user_api import models, schemas
 
 
 def get_user_by_id(db: Session, user_id: int) -> models.User | None:

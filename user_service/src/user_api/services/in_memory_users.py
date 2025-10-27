@@ -1,8 +1,8 @@
 """In-memory user service for demonstration and testing."""
 from datetime import datetime, UTC
 
-from ..interfaces import UserServiceInterface
-from ..schemas import User, UserCreate
+from user_service.src.user_api.interfaces import UserServiceInterface
+from user_service.src.user_api.schemas import User, UserCreate
 
 # Simple in-memory "database"
 _users: dict[int, User] = {}
@@ -21,16 +21,10 @@ class InMemoryUserService(UserServiceInterface):
         return None
 
     def create_user(self, user_data: UserCreate) -> User:
-        """
-        Creates a new user.
-        
-        NOTE: In a real application, you would hash the password here before storing it.
-        """
         global _next_user_id
         new_user = User(
-            id=_next_user_id,
-            created_at=datetime.now(UTC),
-            **user_data.model_dump(exclude={"password"}), # Never store plain passwords
+            id=_next_user_id, created_at=datetime.now(UTC),
+            **user_data.model_dump(exclude={"password"}),
         )
         _users[_next_user_id] = new_user
         _next_user_id += 1

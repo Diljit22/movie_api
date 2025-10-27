@@ -11,13 +11,12 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from . import config, interfaces
-from .database import SessionLocal
-from .services.favorites_service_json import JSONFileFavoritesService
-from .services.in_memory_favorites import InMemoryFavoritesService
-from .services.in_memory_users import InMemoryUserService
-from .services.user_service_postgres import PostgresUserService
-
+from user_service.src.user_api import config, interfaces
+from user_service.src.user_api.database import SessionLocal
+from user_service.src.user_api.services.favorites_service_json import JSONFileFavoritesService
+from user_service.src.user_api.services.in_memory_favorites import InMemoryFavoritesService
+from user_service.src.user_api.services.in_memory_users import InMemoryUserService
+from user_service.src.user_api.services.user_service_postgres import PostgresUserService
 
 # --- Database Dependency ---
 def get_db():
