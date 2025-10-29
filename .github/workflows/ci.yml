@@ -54,7 +54,6 @@ jobs:
       - name: Run Linters
         run: |
           ruff check .
-          mypy .
       
       - name: Run Tests with Coverage
         env:

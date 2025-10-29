@@ -151,6 +151,7 @@ async def test_cache_overwrites_existing_key(tmp_path):
     await cache.set("key", {"value": 2})
 
     result = await cache.get("key")
+    assert result["value"] is not None
     assert result["value"] == 2
 
 

@@ -71,3 +71,23 @@ class UserUpdate(BaseModel):
 
     username: str | None = Field(None, min_length=3, max_length=50)
     email: EmailStr | None = None
+
+
+class FavoriteCreate(BaseModel):
+    """Schema for creating a favorite."""
+
+    movie_id: int
+    title: str
+    poster_path: str | None = None
+
+
+class Favorite(BaseModel):
+    """Schema for a favorite movie."""
+
+    user_id: int
+    movie_id: int
+    title: str
+    poster_path: str | None = None
+    added_at: datetime | None = None
+
+    model_config = ConfigDict(from_attributes=True)
