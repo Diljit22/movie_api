@@ -3,7 +3,6 @@ from fastapi.testclient import TestClient
 
 def test_login_success(client: TestClient):
     """Tests successful login and token generation."""
-    # 1. Create a user to log in with
     email = "login_success@example.com"
     password = "a-secure-password"
     client.post(

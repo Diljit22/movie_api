@@ -15,7 +15,6 @@ class JSONFileFavoritesService(FavoritesServiceInterface):
 
     def __init__(self, filepath: str):
         self._filepath = filepath
-        # Ensure the directory for the file exists.
         data_dir = os.path.dirname(self._filepath)
         os.makedirs(data_dir, exist_ok=True)
         # The internal cache is a dict mapping user_id (str) to a set of movie_ids (int)
@@ -28,7 +27,6 @@ class JSONFileFavoritesService(FavoritesServiceInterface):
 
         try:
             with open(self._filepath) as f:
-                # Load data, converting lists of movie_ids to sets
                 raw_data = json.load(f)
                 return defaultdict(
                     set,
@@ -46,7 +44,6 @@ class JSONFileFavoritesService(FavoritesServiceInterface):
     def _save(self):
         """Saves the current favorites to the JSON file."""
         with open(self._filepath, "w") as f:
-            # Convert sets to lists for JSON serialization
             serializable_data = {
                 user_id: list(movie_ids)
                 for user_id, movie_ids in self._favorites.items()

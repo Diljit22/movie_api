@@ -2,7 +2,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-# --- Mocks for SQLAlchemy Session and Models ---
 # Create a fake DB session object
 mock_db_session = MagicMock()
 
@@ -14,7 +13,6 @@ fake_user_model.email = "test@example.com"
 fake_user_model.hashed_password = "hashed_password_string"
 
 
-# --- Tests ---
 @pytest.fixture(autouse=True)
 def patch_crud_and_security():
     """
@@ -98,15 +96,15 @@ def test_create_user(patch_crud_and_security):
 
     new_user = service.create_user(user_data)
 
-    # 1. Assert that the password was sent to the hashing function
+    # Assert that the password was sent to the hashing function
     mock_security.hash_password.assert_called_once_with("password123")
 
-    # 2. Assert that the crud create function was called with the user data and the *newly hashed* password
+    # Assert that the crud create function was called with the user data and the *newly hashed* password
     mock_crud.create_user.assert_called_once_with(
         mock_db_session, user=user_data, hashed_password="a-new-hashed-password"
     )
 
-    # 3. Assert the returned user is correct
+    # Assert the returned user is correct
     assert (
         new_user.username == "testuser"
     )  # Corresponds to the fake_user_model returned by the mock

@@ -16,7 +16,6 @@ from user_service.src.user_api.middleware.request_id import RequestIDMiddleware
 from user_service.src.user_api.routers import auth, favorites, users
 from user_service.src.user_api.schemas import ErrorDetail, ErrorResponse
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
@@ -26,10 +25,6 @@ logging.basicConfig(
 async def lifespan(app: FastAPI):
     """Handles application startup and shutdown events."""
     logging.info("User API starting up...")
-    #    logging.info("Creating database tables...")
-    # This command creates all tables defined in models.py that don't already exist
-    #    database.Base.metadata.create_all(bind=database.engine)
-    #    logging.info("Database tables created.")
     yield
     logging.info("User API shutting down...")
 

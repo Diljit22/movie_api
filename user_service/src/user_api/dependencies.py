@@ -25,7 +25,6 @@ from user_service.src.user_api.services.in_memory_users import InMemoryUserServi
 from user_service.src.user_api.services.user_service_postgres import PostgresUserService
 
 
-# --- Database Dependency ---
 def get_db():
     """
     FastAPI dependency that provides a database session.
@@ -41,7 +40,6 @@ def get_db():
 DBSessionDep = Annotated[Session, Depends(get_db)]
 
 
-# --- Service Implementations Mapping ---
 FAVORITES_IMPLEMENTATIONS: dict[
     str, Callable[[], interfaces.FavoritesServiceInterface]
 ] = {
@@ -57,7 +55,6 @@ USER_IMPLEMENTATIONS: dict[str, Callable[..., interfaces.UserServiceInterface]] 
 }
 
 
-# --- Service Dependency Providers ---
 def get_favorites_service() -> interfaces.FavoritesServiceInterface:
     """Dependency provider for the favorites service."""
     factory = FAVORITES_IMPLEMENTATIONS.get(config.settings.favorites_implementation)

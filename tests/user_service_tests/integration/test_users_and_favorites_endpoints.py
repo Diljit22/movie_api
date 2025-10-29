@@ -89,36 +89,36 @@ def test_favorites_flow(client: TestClient, auth_headers: dict, httpx_mock: HTTP
         },
     )
 
-    # 1. Get initial list of favorites (calls the mock)
+    # Get initial list of favorites (calls the mock)
     response = client.get("/api/favorites/", headers=auth_headers)
     assert response.status_code == 200
     # The initial list of favorite IDs is empty, so the service won't call the mock.
     assert response.json()["favorites"] == []
 
-    # 2. Add a favorite
+    # Add a favorite
     response = client.post(f"/api/favorites/{movie_id}", headers=auth_headers)
     assert response.status_code == 201
     assert response.json()["movie_id"] == movie_id
 
-    # 3. Check if it's a favorite
+    # Check if it's a favorite
     response = client.get(
         f"/api/favorites/{movie_id}/is-favorite", headers=auth_headers
     )
     assert response.status_code == 200
     assert response.json()["is_favorite"] is True
 
-    # 4. Get the list of favorites again to confirm the mock is working
+    # Get the list of favorites again to confirm the mock is working
     response = client.get("/api/favorites/", headers=auth_headers)
     assert response.status_code == 200
     assert len(response.json()["favorites"]) == 1
     assert response.json()["favorites"][0]["id"] == movie_id
 
-    # 5. Remove the favorite
+    # Remove the favorite
     response = client.delete(f"/api/favorites/{movie_id}", headers=auth_headers)
     assert response.status_code == 200
     assert response.json()["movie_id"] == movie_id
 
-    # 6. Check again, should not be a favorite
+    # Check again, should not be a favorite
     response = client.get(
         f"/api/favorites/{movie_id}/is-favorite", headers=auth_headers
     )
