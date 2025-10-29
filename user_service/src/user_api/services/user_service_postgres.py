@@ -4,47 +4,43 @@ Postgres implementation of the UserServiceInterface.
 
 from sqlalchemy.orm import Session
 
-from user_service.src.user_api import crud, schemas, security
+from user_service.src.user_api import crud, models, schemas, security
 from user_service.src.user_api.interfaces import UserServiceInterface
 
 
 class PostgresUserService(UserServiceInterface):
-    """
-    Service layer for user management that interacts with a Postgres database.
-    """
+    """Service layer for user management that interacts with a Postgres database."""
 
     def __init__(self, db: Session):
         self.db = db
 
-    def get_user_by_id(self, user_id: int) -> schemas.User | None:
+    def get_user_by_id(self, user_id: int) -> models.User | None:
         """Retrieves a user by their ID from the database."""
         db_user = crud.get_user_by_id(self.db, user_id=user_id)
-        return schemas.User.model_validate(db_user) if db_user else None
+        return db_user
 
-    def get_user_by_email(self, email: str) -> schemas.User | None:
+    def get_user_by_email(self, email: str) -> models.User | None:
         """Retrieves a user by their email from the database."""
         db_user = crud.get_user_by_email(self.db, email=email)
-        return schemas.User.model_validate(db_user) if db_user else None
+        return db_user
 
-    def create_user(self, user_data: schemas.UserCreate) -> schemas.User:
-        """
-        Hashes the user's password and creates a new user in the database.
-        """
+    def create_user(self, user_data: schemas.UserCreate) -> models.User:
+        """Hashes the user's password and creates a new user in the database."""
         hashed_password = security.hash_password(user_data.password)
         db_user = crud.create_user(
             self.db, user=user_data, hashed_password=hashed_password
         )
-        return schemas.User.model_validate(db_user)
+        return db_user
 
     def update_user(
         self, user_id: int, user_data: schemas.UserUpdate
-    ) -> schemas.User | None:
+    ) -> models.User | None:
         db_user = crud.get_user_by_id(self.db, user_id)
         if not db_user:
             return None
         updated_user = crud.update_user(self.db, db_user, user_data)
-        return schemas.User.model_validate(updated_user)
+        return updated_user
 
-    def delete_user(self, user_id: int) -> schemas.User | None:
+    def delete_user(self, user_id: int) -> models.User | None:
         deleted_user = crud.delete_user(self.db, user_id)
-        return schemas.User.model_validate(deleted_user) if deleted_user else None
+        return deleted_user if deleted_user else None

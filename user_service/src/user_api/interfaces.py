@@ -4,7 +4,7 @@ Defines the abstract interfaces for services in the User API.
 
 from abc import ABC, abstractmethod
 
-from user_service.src.user_api.schemas import User, UserCreate, UserUpdate
+from user_service.src.user_api import models, schemas
 
 
 class FavoritesServiceInterface(ABC):
@@ -35,26 +35,28 @@ class UserServiceInterface(ABC):
     """Abstract interface for managing users."""
 
     @abstractmethod
-    def get_user_by_id(self, user_id: int) -> User | None:
+    def get_user_by_id(self, user_id: int) -> models.User | None:
         """Retrieves a user by their ID."""
         pass
 
     @abstractmethod
-    def get_user_by_email(self, email: str) -> User | None:
+    def get_user_by_email(self, email: str) -> models.User | None:
         """Retrieves a user by their email address."""
         pass
 
     @abstractmethod
-    def create_user(self, user_data: UserCreate) -> User:
+    def create_user(self, user_data: schemas.UserCreate) -> models.User:
         """Creates a new user and returns their data."""
         pass
 
     @abstractmethod
-    def update_user(self, user_id: int, user_data: UserUpdate) -> User | None:
+    def update_user(
+        self, user_id: int, user_data: schemas.UserUpdate
+    ) -> models.User | None:
         """Updates a user's profile."""
         pass
 
     @abstractmethod
-    def delete_user(self, user_id: int) -> User | None:
+    def delete_user(self, user_id: int) -> models.User | None:
         """Deletes a user."""
         pass

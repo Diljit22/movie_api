@@ -30,17 +30,6 @@ def create_user(user_data: UserCreate, user_service: UserServiceDep):
     return user_service.create_user(user_data=user_data)
 
 
-@router.get("/{user_id}", response_model=User)
-def read_user(user_id: int, user_service: UserServiceDep):
-    """Retrieve a user's public profile by their ID."""
-    db_user = user_service.get_user_by_id(user_id=user_id)
-    if db_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
-    return db_user
-
-
 @router.get("/me", response_model=User)
 def read_users_me(current_user: CurrentUserDep):
     """Get the profile of the currently authenticated user."""
@@ -68,3 +57,14 @@ def delete_users_me(current_user: CurrentUserDep, user_service: UserServiceDep):
     if deleted_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return deleted_user
+
+
+@router.get("/{user_id}", response_model=User)
+def read_user(user_id: int, user_service: UserServiceDep):
+    """Retrieve a user's public profile by their ID."""
+    db_user = user_service.get_user_by_id(user_id=user_id)
+    if db_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    return db_user

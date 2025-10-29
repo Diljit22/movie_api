@@ -12,7 +12,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
-from user_service.src.user_api import config, interfaces, schemas, security
+from user_service.src.user_api import config, interfaces, models, security
 from user_service.src.user_api.database import SessionLocal
 from user_service.src.user_api.services.favorites_service_json import (
     JSONFileFavoritesService,
@@ -91,10 +91,10 @@ TokenDep = Annotated[str, Depends(oauth2_scheme)]
 def get_current_user(
     token: TokenDep,
     user_service: Annotated[interfaces.UserServiceInterface, Depends(get_user_service)],
-) -> schemas.User:
+) -> models.User:
     """
     Dependency to get the current authenticated user.
-    It decodes the JWT token from the Authorization header and returns the user.
+    It decodes the JWT token and returns the user model from the database.
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -110,16 +110,11 @@ def get_current_user(
     if email is None:
         raise credentials_exception
 
-    token_data = schemas.TokenData(sub=email)
-
-    if token_data.sub is None:  # slightly redundant but makes mypy happy
-        raise credentials_exception
-
-    user = user_service.get_user_by_email(email=token_data.sub)
+    user = user_service.get_user_by_email(email=email)
     if user is None:
         raise credentials_exception
 
     return user
 
 
-CurrentUserDep = Annotated[schemas.User, Depends(get_current_user)]
+CurrentUserDep = Annotated[models.User, Depends(get_current_user)]
