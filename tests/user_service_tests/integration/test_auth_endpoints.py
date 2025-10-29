@@ -30,7 +30,7 @@ def test_login_failure_wrong_password(client: TestClient):
         "/api/login", data={"username": email, "password": "this-is-wrong"}
     )
     assert response.status_code == 401
-    assert "Incorrect email or password" in response.json()["detail"]
+    assert "Incorrect email or password" in response.json()["detail"]["message"]
 
 
 def test_get_me_endpoint(client: TestClient, auth_headers: dict):

@@ -44,6 +44,14 @@ class TokenData(BaseModel):
     sub: str | None = None
 
 
+class Movie(BaseModel):
+    id: int
+    title: str
+    overview: str
+    poster_path: str | None = None
+    release_date: str
+
+
 class FavoriteResponse(BaseModel):
     message: str
     user_id: int
@@ -55,7 +63,7 @@ class IsFavoriteResponse(BaseModel):
 
 
 class AllFavoritesResponse(BaseModel):
-    favorites: list[int]
+    favorites: list[Movie]
 
 
 class UserUpdate(BaseModel):
