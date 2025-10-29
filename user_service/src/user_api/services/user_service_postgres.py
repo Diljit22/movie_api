@@ -17,12 +17,12 @@ class PostgresUserService(UserServiceInterface):
     def get_user_by_id(self, user_id: int) -> models.User | None:
         """Retrieves a user by their ID from the database."""
         db_user = crud.get_user_by_id(self.db, user_id=user_id)
-        return db_user
+        return schemas.User.model_validate(db_user) if db_user else None
 
     def get_user_by_email(self, email: str) -> models.User | None:
         """Retrieves a user by their email from the database."""
         db_user = crud.get_user_by_email(self.db, email=email)
-        return db_user
+        return schemas.User.model_validate(db_user) if db_user else None
 
     def create_user(self, user_data: schemas.UserCreate) -> models.User:
         """Hashes the user's password and creates a new user in the database."""
@@ -30,7 +30,7 @@ class PostgresUserService(UserServiceInterface):
         db_user = crud.create_user(
             self.db, user=user_data, hashed_password=hashed_password
         )
-        return db_user
+        return schemas.User.model_validate(db_user)
 
     def update_user(
         self, user_id: int, user_data: schemas.UserUpdate
@@ -39,8 +39,8 @@ class PostgresUserService(UserServiceInterface):
         if not db_user:
             return None
         updated_user = crud.update_user(self.db, db_user, user_data)
-        return updated_user
+        return schemas.User.model_validate(updated_user)
 
     def delete_user(self, user_id: int) -> models.User | None:
         deleted_user = crud.delete_user(self.db, user_id)
-        return deleted_user if deleted_user else None
+        return schemas.User.model_validate(deleted_user) if deleted_user else None

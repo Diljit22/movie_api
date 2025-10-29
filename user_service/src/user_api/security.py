@@ -3,6 +3,7 @@ Security-related utilities, primarily for password hashing and verification.
 """
 
 from datetime import UTC, datetime, timedelta
+from typing import cast
 
 import bcrypt
 from jose import JWTError, jwt
@@ -33,7 +34,7 @@ def create_access_token(data: dict) -> str:
     encoded_jwt = jwt.encode(
         to_encode, settings.jwt_secret_key, algorithm=settings.jwt_algorithm
     )
-    return encoded_jwt
+    return cast(str, encoded_jwt)
 
 
 def decode_access_token(token: str) -> dict | None:
@@ -42,6 +43,6 @@ def decode_access_token(token: str) -> dict | None:
         payload = jwt.decode(
             token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm]
         )
-        return payload
+        return cast(dict, payload)
     except JWTError:
         return None

@@ -1,6 +1,6 @@
 import logging
 
-from user_api.database import Base, engine
+from user_service.src.user_api.database import Base, engine
 
 logging.basicConfig(level=logging.INFO)
 

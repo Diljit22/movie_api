@@ -10,6 +10,7 @@ dependencies = [
     "fastapi>=0.118.0",
     "uvicorn[standard]>=0.37.0",
     "pydantic-settings>=2.11.0",
+    "pydantic[email]>=2.0.0",
     "httpx>=0.28.1",
     "redis>=6.4.0",
     "opentelemetry-api>=1.38.0",
@@ -21,6 +22,7 @@ dependencies = [
     "psycopg2-binary>=2.9.11",
     "bcrypt>=5.0.0",
     "python-jose[cryptography]>=3.5.0",
+    "python-multipart>=0.0.20",
 ]
 
 [project.optional-dependencies]

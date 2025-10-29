@@ -6,13 +6,14 @@ create and inject instances of our service and cache classes into the
 API route handlers.
 """
 
+from collections.abc import Callable
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
-from user_service.src.user_api import config, interfaces, models, security
+from user_service.src.user_api import config, interfaces, models, schemas, security
 from user_service.src.user_api.database import SessionLocal
 from user_service.src.user_api.services.favorites_service_json import (
     JSONFileFavoritesService,
@@ -41,14 +42,16 @@ DBSessionDep = Annotated[Session, Depends(get_db)]
 
 
 # --- Service Implementations Mapping ---
-FAVORITES_IMPLEMENTATIONS = {
+FAVORITES_IMPLEMENTATIONS: dict[
+    str, Callable[[], interfaces.FavoritesServiceInterface]
+] = {
     "json_file": lambda: JSONFileFavoritesService(
         filepath=config.settings.favorites_filepath
     ),
     "in_memory": InMemoryFavoritesService,
 }
 
-USER_IMPLEMENTATIONS = {
+USER_IMPLEMENTATIONS: dict[str, Callable[..., interfaces.UserServiceInterface]] = {
     "postgres": PostgresUserService,
     "in_memory": InMemoryUserService,
 }
@@ -91,7 +94,7 @@ TokenDep = Annotated[str, Depends(oauth2_scheme)]
 def get_current_user(
     token: TokenDep,
     user_service: Annotated[interfaces.UserServiceInterface, Depends(get_user_service)],
-) -> models.User:
+) -> schemas.User:
     """
     Dependency to get the current authenticated user.
     It decodes the JWT token and returns the user model from the database.
