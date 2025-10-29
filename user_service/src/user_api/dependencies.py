@@ -8,15 +8,21 @@ API route handlers.
 
 from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
-from user_service.src.user_api import config, interfaces
+from user_service.src.user_api import config, interfaces, schemas, security
 from user_service.src.user_api.database import SessionLocal
-from user_service.src.user_api.services.favorites_service_json import JSONFileFavoritesService
-from user_service.src.user_api.services.in_memory_favorites import InMemoryFavoritesService
+from user_service.src.user_api.services.favorites_service_json import (
+    JSONFileFavoritesService,
+)
+from user_service.src.user_api.services.in_memory_favorites import (
+    InMemoryFavoritesService,
+)
 from user_service.src.user_api.services.in_memory_users import InMemoryUserService
 from user_service.src.user_api.services.user_service_postgres import PostgresUserService
+
 
 # --- Database Dependency ---
 def get_db():
@@ -30,12 +36,15 @@ def get_db():
     finally:
         db.close()
 
+
 DBSessionDep = Annotated[Session, Depends(get_db)]
 
 
 # --- Service Implementations Mapping ---
 FAVORITES_IMPLEMENTATIONS = {
-    "json_file": lambda: JSONFileFavoritesService(filepath=config.settings.favorites_filepath),
+    "json_file": lambda: JSONFileFavoritesService(
+        filepath=config.settings.favorites_filepath
+    ),
     "in_memory": InMemoryFavoritesService,
 }
 
@@ -50,7 +59,9 @@ def get_favorites_service() -> interfaces.FavoritesServiceInterface:
     """Dependency provider for the favorites service."""
     factory = FAVORITES_IMPLEMENTATIONS.get(config.settings.favorites_implementation)
     if not factory:
-        raise ValueError(f"Unknown favorites_implementation: '{config.settings.favorites_implementation}'")
+        raise ValueError(
+            f"Unknown favorites_implementation: '{config.settings.favorites_implementation}'"
+        )
     return factory()
 
 
@@ -62,10 +73,53 @@ def get_user_service(db: DBSessionDep) -> interfaces.UserServiceInterface:
     """
     factory = USER_IMPLEMENTATIONS.get(config.settings.user_implementation)
     if not factory:
-        raise ValueError(f"Unknown user_implementation: '{config.settings.user_implementation}'")
-    
+        raise ValueError(
+            f"Unknown user_implementation: '{config.settings.user_implementation}'"
+        )
+
     # If the chosen implementation is Postgres, it needs the 'db' session.
     if factory is PostgresUserService:
         return factory(db=db)
     # Otherwise, it's the in-memory service which doesn't need a db session.
     return factory()
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
+TokenDep = Annotated[str, Depends(oauth2_scheme)]
+
+
+def get_current_user(
+    token: TokenDep,
+    user_service: Annotated[interfaces.UserServiceInterface, Depends(get_user_service)],
+) -> schemas.User:
+    """
+    Dependency to get the current authenticated user.
+    It decodes the JWT token from the Authorization header and returns the user.
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    payload = security.decode_access_token(token)
+    if payload is None:
+        raise credentials_exception
+
+    email: str | None = payload.get("sub")
+    if email is None:
+        raise credentials_exception
+
+    token_data = schemas.TokenData(sub=email)
+
+    if token_data.sub is None:  # slightly redundant but makes mypy happy
+        raise credentials_exception
+
+    user = user_service.get_user_by_email(email=token_data.sub)
+    if user is None:
+        raise credentials_exception
+
+    return user
+
+
+CurrentUserDep = Annotated[schemas.User, Depends(get_current_user)]

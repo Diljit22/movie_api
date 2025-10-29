@@ -2,9 +2,9 @@
 Main application file for the Movie API.
 """
 
+import asyncio
 import logging
 import time
-import asyncio
 from contextlib import asynccontextmanager
 from datetime import UTC, datetime
 
@@ -13,17 +13,16 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse, Response
 from prometheus_client import make_asgi_app
 
-from movie_service.src.movie_api.middleware.request_id import RequestIDMiddleware
-from movie_service.src.movie_api.monitoring import metrics
-from movie_service.src.movie_api.monitoring.cache_stats import cache_stats
-from movie_service.src.movie_api.routers import movies
-from movie_service.src.movie_api.schemas import ErrorDetail, ErrorResponse
-
 from movie_service.src.movie_api.dependencies import (
     get_distributed_cache,
     get_in_memory_cache,
     get_movie_service,
 )
+from movie_service.src.movie_api.middleware.request_id import RequestIDMiddleware
+from movie_service.src.movie_api.monitoring import metrics
+from movie_service.src.movie_api.monitoring.cache_stats import cache_stats
+from movie_service.src.movie_api.routers import movies
+from movie_service.src.movie_api.schemas import ErrorDetail, ErrorResponse
 
 logging.basicConfig(
     level=logging.INFO,
@@ -40,23 +39,24 @@ async def warm_cache():
     l1_cache = get_in_memory_cache()
     l2_cache = get_distributed_cache()
     movie_service = get_movie_service()
-    
+
     while True:
         try:
             logging.info("Cache warming: Fetching daily trending movies...")
             trending_movies = await movie_service.get_trending_movies(time_window="day")
             cache_key = "trending_movies_day"
-            
+
             # Populate both caches
             await l2_cache.set(cache_key, trending_movies)
             await l1_cache.set(cache_key, trending_movies)
-            
+
             logging.info("Cache warming: Daily trending movies cache refreshed.")
         except Exception as e:
             logging.error(f"Cache warming task failed: {e}")
-        
+
         # Wait for 10 minutes (600 seconds) before the next run
         await asyncio.sleep(600)
+
 
 # Lifespan context manager for startup/shutdown
 @asynccontextmanager
@@ -64,7 +64,7 @@ async def lifespan(app: FastAPI):
     """Handles application startup and shutdown events."""
     # Startup
     logging.info("Movie API starting up...")
-    
+
     asyncio.create_task(warm_cache())
     yield
     # Shutdown

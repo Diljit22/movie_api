@@ -1,6 +1,7 @@
 """
 Postgres implementation of the UserServiceInterface.
 """
+
 from sqlalchemy.orm import Session
 
 from user_service.src.user_api import crud, schemas, security
@@ -11,6 +12,7 @@ class PostgresUserService(UserServiceInterface):
     """
     Service layer for user management that interacts with a Postgres database.
     """
+
     def __init__(self, db: Session):
         self.db = db
 
@@ -33,3 +35,16 @@ class PostgresUserService(UserServiceInterface):
             self.db, user=user_data, hashed_password=hashed_password
         )
         return schemas.User.model_validate(db_user)
+
+    def update_user(
+        self, user_id: int, user_data: schemas.UserUpdate
+    ) -> schemas.User | None:
+        db_user = crud.get_user_by_id(self.db, user_id)
+        if not db_user:
+            return None
+        updated_user = crud.update_user(self.db, db_user, user_data)
+        return schemas.User.model_validate(updated_user)
+
+    def delete_user(self, user_id: int) -> schemas.User | None:
+        deleted_user = crud.delete_user(self.db, user_id)
+        return schemas.User.model_validate(deleted_user) if deleted_user else None

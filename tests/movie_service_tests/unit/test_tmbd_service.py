@@ -34,7 +34,7 @@ async def test_get_trending_movies_success(httpx_mock):
     assert result["results"][0]["poster_path"] == expected_path
     assert result["results"][0]["id"] == 1
     assert result["results"][0]["title"] == "Test Movie"
-    
+
     # Verify multiple results
     assert len(result["results"]) == 2
 

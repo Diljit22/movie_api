@@ -1,5 +1,5 @@
 import json
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from fakeredis.aioredis import FakeRedis
@@ -15,6 +15,7 @@ def mock_redis_pool():
         # We don't need the pool itself, just to prevent the real connection
         yield mock_pool
 
+
 @pytest.mark.asyncio
 async def test_redis_cache_set_and_get(mock_redis_pool):
     """Tests that a value can be set and retrieved from the Redis cache."""
@@ -29,12 +30,14 @@ async def test_redis_cache_set_and_get(mock_redis_pool):
     assert retrieved is not None
     assert retrieved["title"] == "Fight Club"
 
+
 @pytest.mark.asyncio
 async def test_redis_cache_miss(mock_redis_pool):
     """Tests that getting a non-existent key returns None."""
     cache = RedisCache(redis_url="redis://fake")
     cache._client = FakeRedis()
     assert await cache.get("miss:key") is None
+
 
 @pytest.mark.asyncio
 async def test_redis_cache_set_with_ttl(mock_redis_pool):
@@ -61,8 +64,8 @@ async def test_redis_cache_close_connection(mock_redis_pool):
     cache = RedisCache(redis_url="redis://fake")
     with patch("redis.asyncio.Redis") as mock_redis_class:
         mock_client = AsyncMock()
-        mock_pool_instance = AsyncMock() # The pool also has async methods
-        
+        mock_pool_instance = AsyncMock()  # The pool also has async methods
+
         mock_redis_class.return_value = mock_client
         mock_redis_pool.return_value = mock_pool_instance
         cache._client = mock_client

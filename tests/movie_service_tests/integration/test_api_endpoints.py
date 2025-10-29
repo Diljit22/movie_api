@@ -5,6 +5,7 @@ These tests verify the behavior of the API, including routing,
 dependency injection, caching logic, and error handling.
 """
 
+
 class TestBasicEndpoints:
     def test_root_endpoint(self, client_with_mocks):
         """Test the root endpoint returns a successful response."""
@@ -23,7 +24,7 @@ class TestBasicEndpoints:
     def test_metrics_endpoints(self, client_with_mocks):
         """Test metrics and metrics reset endpoints work correctly."""
         client, _, _, _ = client_with_mocks
-        client.get("/api/trending/day") # Generate some stats
+        client.get("/api/trending/day")  # Generate some stats
         response = client.get("/metrics")
         assert response.status_code == 200
         assert response.json()["cache_stats"]["api_calls"] == 1
@@ -40,6 +41,7 @@ class TestBasicEndpoints:
         assert "X-Process-Time" in response.headers
         assert float(response.headers["X-Process-Time"]) >= 0
 
+
 class TestMovieApiCaching:
     def test_full_cache_miss_populates_caches(self, client_with_mocks):
         """Scenario: L1 & L2 miss -> Call API -> Populate L1 & L2."""
@@ -53,29 +55,35 @@ class TestMovieApiCaching:
     def test_l1_cache_hit(self, client_with_mocks):
         """Scenario: L1 hit -> Return from L1 -> No API call."""
         client, _, _, movie_service = client_with_mocks
-        client.get("/api/movie/102") # First call populates cache
+        client.get("/api/movie/102")  # First call populates cache
         assert movie_service.calls_to_details == 1
-        response = client.get("/api/movie/102") # Second call should hit L1
+        response = client.get("/api/movie/102")  # Second call should hit L1
         assert response.status_code == 200
-        assert movie_service.calls_to_details == 1 # Service not called again
+        assert movie_service.calls_to_details == 1  # Service not called again
 
     def test_l2_cache_hit_populates_l1(self, client_with_mocks):
         """Scenario: L1 miss -> L2 hit -> Populate L1 -> No API call."""
         client, l1_cache, l2_cache, movie_service = client_with_mocks
         # Manually populate L2 to simulate a previous request
         complete_movie_data = {
-            "id": 103, "title": "From L2", "overview": "Cached overview",
-            "poster_path": "/cached.jpg", "release_date": "2024-01-01",
-            "tagline": "Cached tagline", "status": "Released",
-            "vote_average": 7.7, "vote_count": 777,
+            "id": 103,
+            "title": "From L2",
+            "overview": "Cached overview",
+            "poster_path": "/cached.jpg",
+            "release_date": "2024-01-01",
+            "tagline": "Cached tagline",
+            "status": "Released",
+            "vote_average": 7.7,
+            "vote_count": 777,
         }
         l2_cache._cache["movie_details_103"] = complete_movie_data
         response = client.get("/api/movie/103")
         assert response.status_code == 200
-        assert movie_service.calls_to_details == 0 # Service was not called
-        assert "movie_details_103" in l1_cache._cache # L1 was populated
+        assert movie_service.calls_to_details == 0  # Service was not called
+        assert "movie_details_103" in l1_cache._cache  # L1 was populated
         assert response.json()["overview"] == "Cached overview"
-        
+
+
 class TestMovieApiEndpoints:
     def test_get_movie_details_not_found(self, client_with_mocks):
         """Tests 404 error handling for a non-existent movie."""
@@ -91,6 +99,7 @@ class TestMovieApiEndpoints:
         assert response.status_code == 200
         assert "Search Result for Test" in response.text
         assert movie_service.calls_to_search == 1
+
 
 class TestBatchEndpoint:
     def test_batch_movies_success(self, client_with_mocks):
@@ -123,9 +132,9 @@ class TestBatchEndpoint:
         response = client.post("/api/movies/batch", json={"movie_ids": [10, 20, 10]})
         assert response.status_code == 200
         data = response.json()
-        assert data["total_requested"] == 2 # Only 2 unique IDs requested
+        assert data["total_requested"] == 2  # Only 2 unique IDs requested
         assert data["total_found"] == 2
-        assert movie_service.calls_to_details == 2 # Service called once per unique ID
+        assert movie_service.calls_to_details == 2  # Service called once per unique ID
 
     def test_batch_movies_validation_empty_list(self, client_with_mocks):
         """Tests validation for an empty movie_ids list."""

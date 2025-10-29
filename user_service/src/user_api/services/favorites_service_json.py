@@ -1,10 +1,12 @@
 """
 Implementation of the FavoritesServiceInterface using a local JSON file.
 """
+
 import json
 import logging
 import os
 from collections import defaultdict
+
 from user_service.src.user_api.interfaces import FavoritesServiceInterface
 
 
@@ -23,16 +25,22 @@ class JSONFileFavoritesService(FavoritesServiceInterface):
         """Loads favorites from the JSON file."""
         if not os.path.exists(self._filepath):
             return defaultdict(set)
-        
+
         try:
-            with open(self._filepath, "r") as f:
+            with open(self._filepath) as f:
                 # Load data, converting lists of movie_ids to sets
                 raw_data = json.load(f)
-                return defaultdict(set, {
-                    user_id: set(movie_ids) for user_id, movie_ids in raw_data.items()
-                })
+                return defaultdict(
+                    set,
+                    {
+                        user_id: set(movie_ids)
+                        for user_id, movie_ids in raw_data.items()
+                    },
+                )
         except (json.JSONDecodeError, TypeError):
-            logging.warning(f"Favorites file at {self._filepath} is corrupted. Starting fresh.")
+            logging.warning(
+                f"Favorites file at {self._filepath} is corrupted. Starting fresh."
+            )
             return defaultdict(set)
 
     def _save(self):
@@ -40,7 +48,8 @@ class JSONFileFavoritesService(FavoritesServiceInterface):
         with open(self._filepath, "w") as f:
             # Convert sets to lists for JSON serialization
             serializable_data = {
-                user_id: list(movie_ids) for user_id, movie_ids in self._favorites.items()
+                user_id: list(movie_ids)
+                for user_id, movie_ids in self._favorites.items()
             }
             json.dump(serializable_data, f, indent=2)
 

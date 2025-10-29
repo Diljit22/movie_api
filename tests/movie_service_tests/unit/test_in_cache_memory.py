@@ -81,7 +81,7 @@ async def test_cache_handles_multiple_keys():
 async def test_cache_concurrent_operations():
     """Tests that cache handles concurrent operations."""
     import asyncio
-    
+
     cache = InMemoryCache()
 
     async def write_cache(i):

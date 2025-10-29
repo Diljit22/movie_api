@@ -3,6 +3,7 @@ In-memory implementation of the FavoritesServiceInterface.
 
 Data is stored in a dictionary and is lost on application restart.
 """
+
 from collections import defaultdict
 
 from user_service.src.user_api.interfaces import FavoritesServiceInterface

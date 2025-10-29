@@ -65,7 +65,7 @@ async def test_cache_persists_to_file(tmp_path):
     # Read file directly and verify content
     with open(cache_file) as f:
         file_content = json.load(f)
-    
+
     assert "persist_key" in file_content
     assert file_content["persist_key"]["data"]["title"] == "Persisted Movie"
 
@@ -74,7 +74,7 @@ async def test_cache_persists_to_file(tmp_path):
 async def test_cache_loads_from_existing_file(tmp_path):
     """Tests that cache loads data from an existing file."""
     cache_file = tmp_path / "test_cache.json"
-    
+
     # Create first cache instance and write data
     cache1 = JSONFileCache(filepath=str(cache_file))
     await cache1.set("key1", {"value": "first"})
@@ -82,7 +82,7 @@ async def test_cache_loads_from_existing_file(tmp_path):
     # Create second cache instance (should load from file)
     cache2 = JSONFileCache(filepath=str(cache_file))
     result = await cache2.get("key1")
-    
+
     assert result is not None
     assert result["value"] == "first"
 
@@ -91,7 +91,7 @@ async def test_cache_loads_from_existing_file(tmp_path):
 async def test_cache_handles_corrupted_file(tmp_path):
     """Tests that cache handles a corrupted JSON file gracefully."""
     cache_file = tmp_path / "corrupted_cache.json"
-    
+
     # Create a corrupted JSON file
     with open(cache_file, "w") as f:
         f.write("{invalid json content")
@@ -99,7 +99,7 @@ async def test_cache_handles_corrupted_file(tmp_path):
     # Cache should start fresh without crashing
     cache = JSONFileCache(filepath=str(cache_file))
     await cache.set("key", {"value": "data"})
-    
+
     result = await cache.get("key")
     assert result is not None
     assert result["value"] == "data"
@@ -109,14 +109,14 @@ async def test_cache_handles_corrupted_file(tmp_path):
 async def test_cache_creates_directory_if_not_exists(tmp_path):
     """Tests that cache creates the directory structure if it doesn't exist."""
     cache_file = tmp_path / "nested" / "dir" / "cache.json"
-    
+
     # Directory doesn't exist yet
     assert not cache_file.parent.exists()
-    
+
     # Creating cache should create the directory
     cache = JSONFileCache(filepath=str(cache_file))
     await cache.set("key", {"value": "test"})
-    
+
     # Verify directory was created
     assert cache_file.parent.exists()
     assert cache_file.exists()
