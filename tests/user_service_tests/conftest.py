@@ -6,7 +6,6 @@ from sqlalchemy.pool import StaticPool
 
 from user_service.src.user_api.database import Base
 from user_service.src.user_api.dependencies import get_db
-
 from user_service.src.user_api.main import app as user_app
 
 # Use an in-memory SQLite database for fast, isolated tests.

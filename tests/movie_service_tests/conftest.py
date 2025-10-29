@@ -15,6 +15,7 @@ from movie_service.src.movie_api.interfaces import CacheInterface, MovieServiceI
 from movie_service.src.movie_api.main import app
 from movie_service.src.movie_api.monitoring.cache_stats import cache_stats
 
+
 class MockCache(CacheInterface):
     """Simple in-memory mock cache for testing."""
 
